@@ -107,7 +107,7 @@
             width: 0%;
             transition: width 0.5s ease-in-out;
         }
-        #difficulty-selector, #auth-container, #profile-container, #leaderboard-container, #dashboard-container, #create-quiz-container, #search-container {
+        #difficulty-selector, #auth-container, #profile-container, #leaderboard-container, #dashboard-container, #create-quiz-container, #search-container, #edit-quiz-container {
             margin-bottom: 30px;
             text-align: center;
         }
@@ -171,6 +171,45 @@
             background-color: var(--neon-color);
             color: var(--bg-color);
         }
+        /* New Styles */
+        #quiz-edit-container, #create-quiz-container {
+            padding: 10px;
+            border: 1px solid var(--neon-color);
+            border-radius: 5px;
+            background-color: var(--card-bg);
+        }
+        #quiz-edit-container input[type="text"], #quiz-edit-container select {
+            margin-bottom: 10px;
+        }
+        .quiz-question {
+            margin-bottom: 10px;
+        }
+        .answer {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .answer input[type="text"] {
+            margin-right: 5px;
+        }
+        .answer input[type="checkbox"] {
+            margin-left: 5px;
+        }
+        #search-results {
+            margin-top: 10px;
+        }
+        .search-result {
+            padding: 10px;
+            border: 1px solid var(--neon-color);
+            border-radius: 5px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .search-result:hover {
+            background-color: var(--neon-color);
+            color: var(--bg-color);
+        }
     </style>
 </head>
 <body>
@@ -221,6 +260,19 @@
             <div id="answer-buttons"></div>
             <button id="next-button" class="btn">Next Question</button>
         </div>
+        <!-- New Sections -->
+        <div id="edit-quiz-container" class="card" style="display: none;">
+            <h2>Edit Quiz</h2>
+            <input type="text" id="quiz-edit-title" placeholder="Quiz Title">
+            <select id="quiz-edit-category"></select>
+            <select id="quiz-edit-difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+            <div id="quiz-edit-questions-container"></div>
+            <button id="save-edit-btn" class="btn">Save Changes</button>
+        </div>
         <div id="create-quiz-container" class="card" style="display: none;">
             <h2>Create Your Own Quiz</h2>
             <input type="text" id="quiz-title" placeholder="Quiz Title">
@@ -228,9 +280,23 @@
                 <option value="">Select Category</option>
                 <!-- Categories will be dynamically added here -->
             </select>
-            <div id="questions-container"></div>
+            <select id="quiz-difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+            <div id="create-quiz-questions-container">
+                <div class="quiz-question">
+                    <input type="text" class="question-text" placeholder="Question">
+                    <div class="answer">
+                        <input type="text" class="answer-text" placeholder="Answer 1">
+                        <input type="checkbox" class="is-correct"> Correct
+                    </div>
+                    <!-- Add more answers as needed -->
+                </div>
+            </div>
             <button id="add-question-btn" class="btn">Add Question</button>
-            <button id="save-quiz-btn" class="btn">Save Quiz</button>
+            <button id="create-quiz-save-btn" class="btn">Save Quiz</button>
         </div>
         <div id="leaderboard-container" class="card">
             <h2>Leaderboard</h2>

@@ -1,7 +1,9 @@
 // script.js
 //taking help from ClaudeAI while coding and understanding concepts through YT 
 
-// Elements
+
+
+
 const questionElement = document.getElementById('question');
 const answerButtonsElement = document.getElementById('answer-buttons');
 const nextButton = document.getElementById('next-button');
@@ -97,6 +99,7 @@ function startQuiz() {
         }
     }
 
+    quizContainer.style.display = 'block';
     startTimer();
     showQuestion();
     updateProgressBar();
@@ -195,11 +198,11 @@ function login() {
         currentUser = { username, score: 0, quizzesCompleted: 0, quizzes: [] };
         authMessage.textContent = 'Login successful!';
         authMessage.style.color = 'green';
+        updateUI();
     } else {
         authMessage.textContent = 'Login failed. Please enter a valid username and password.';
         authMessage.style.color = 'red';
     }
-    updateUI();
 }
 
 function register() {
@@ -209,11 +212,11 @@ function register() {
         currentUser = { username, score: 0, quizzesCompleted: 0, quizzes: [] };
         authMessage.textContent = 'Registration successful!';
         authMessage.style.color = 'green';
+        updateUI();
     } else {
         authMessage.textContent = 'Registration failed. Please enter a valid username and password.';
         authMessage.style.color = 'red';
     }
-    updateUI();
 }
 
 function logout() {
@@ -265,11 +268,12 @@ function updateLeaderboard() {
 }
 
 function updateDashboard() {
-    document.getElementById('user-info').innerHTML = `
-        <h3>User Information</h3>
-        <p>Username: ${currentUser.username}</p>
-        <p>Score: ${currentUser.score}</p>
+    const userStats = document.getElementById('user-stats');
+    userStats.innerHTML = `
+        <h3>User Statistics</h3>
+        <p>Total Score: ${currentUser.score}</p>
         <p>Quizzes Completed: ${currentUser.quizzesCompleted}</p>
+        <p>Quizzes Created: ${currentUser.quizzes.length}</p>
     `;
 }
 
@@ -277,7 +281,8 @@ function updateQuizList() {
     quizList.innerHTML = '';
     quizSelect.innerHTML = '<option value="">Select a quiz</option>';
     quizzes.forEach(quiz => {
-        const quizItem = document.createElement('li');
+        const quizItem = document.createElement('div');
+        quizItem.classList.add('quiz-item');
         quizItem.textContent = `${quiz.title} - ${quiz.category} - ${quiz.difficulty}`;
         quizList.appendChild(quizItem);
 
@@ -292,20 +297,88 @@ function createQuiz() {
     const title = document.getElementById('quiz-title').value;
     const category = document.getElementById('quiz-category').value;
     const difficulty = document.getElementById('quiz-difficulty').value;
-    const questions = document.getElementById('quiz-questions').value.split('\n').map(question => {
-        const [q, ...a] = question.split(';');
-        return {
-            question: q,
-            answers: a.map(ans => {
-                const [text, correct] = ans.split(':');
-                return { text, correct: correct === 'true' };
-            })
-        };
+    const questions = [];
+
+    document.querySelectorAll('.question-item').forEach(item => {
+        const questionText = item.querySelector('.question-text').value;
+        const answers = [];
+        item.querySelectorAll('.answer-item').forEach(answerItem => {
+            answers.push({
+                text: answerItem.querySelector('.answer-text').value,
+                correct: answerItem.querySelector('.answer-correct').checked
+            });
+        });
+        questions.push({ question: questionText, answers });
     });
-    quizzes.push({ title, category, difficulty, questions });
+
+    const newQuiz = { title, category, difficulty, questions };
+    quizzes.push(newQuiz);
+    if (currentUser) {
+        currentUser.quizzes.push(newQuiz);
+    }
     updateQuizList();
+    document.getElementById('quiz-title').value = '';
+    document.getElementById('questions-container').innerHTML = '';
 }
 
+function addQuestion() {
+    const questionsContainer = document.getElementById('questions-container');
+    const questionNumber = questionsContainer.children.length + 1;
+    const questionHTML = `
+        <div class="question-item">
+            <input type="text" class="question-text" placeholder="Question ${questionNumber}">
+            <div class="answers-container">
+                <div class="answer-item">
+                    <input type="text" class="answer-text" placeholder="Answer 1">
+                    <input type="checkbox" class="answer-correct">
+                </div>
+                <div class="answer-item">
+                    <input type="text" class="answer-text" placeholder="Answer 2">
+                    <input type="checkbox" class="answer-correct">
+                </div>
+            </div>
+            <button class="btn add-answer-btn">Add Answer</button>
+        </div>
+    `;
+    questionsContainer.insertAdjacentHTML('beforeend', questionHTML);
+}
+
+function addAnswer(questionItem) {
+    const answersContainer = questionItem.querySelector('.answers-container');
+    const answerNumber = answersContainer.children.length + 1;
+    const answerHTML = `
+        <div class="answer-item">
+            <input type="text" class="answer-text" placeholder="Answer ${answerNumber}">
+            <input type="checkbox" class="answer-correct">
+        </div>
+    `;
+    answersContainer.insertAdjacentHTML('beforeend', answerHTML);
+}
+
+function searchQuizzes() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const filteredQuizzes = quizzes.filter(quiz => 
+        quiz.title.toLowerCase().includes(searchTerm) ||
+        quiz.category.toLowerCase().includes(searchTerm)
+    );
+    displaySearchResults(filteredQuizzes);
+}
+
+function displaySearchResults(results) {
+    searchResults.innerHTML = '';
+    results.forEach(quiz => {
+        const quizItem = document.createElement('div');
+        quizItem.classList.add('quiz-item');
+        quizItem.textContent = `${quiz.title} - ${quiz.category} - ${quiz.difficulty}`;
+        quizItem.addEventListener('click', () => {
+            quizSelect.value = quiz.title;
+            startQuiz();
+        });
+        searchResults.appendChild(quizItem);
+    });
+}
+
+// Event listeners
 document.getElementById('login-btn').addEventListener('click', login);
 document.getElementById('register-btn').addEventListener('click', register);
 document.getElementById('logout-btn').addEventListener('click', logout);
@@ -318,11 +391,20 @@ nextButton.addEventListener('click', () => {
         endQuiz();
     }
 });
-
 document.getElementById('create-quiz-btn').addEventListener('click', createQuiz);
+document.getElementById('add-question-btn').addEventListener('click', addQuestion);
+document.getElementById('questions-container').addEventListener('click', (e) => {
+    if (e.target.classList.contains('add-answer-btn')) {
+        addAnswer(e.target.closest('.question-item'));
+    }
+});
 startSelectedQuizBtn.addEventListener('click', startQuiz);
+searchBtn.addEventListener('click', searchQuizzes);
 
+// Initialize categories
 categoryList.innerHTML = categories.map(category => `<option value="${category}">${category}</option>`).join('');
 
-
-
+// Initialize the app
+updateUI();
+updateLeaderboard();
+updateQuizList();
