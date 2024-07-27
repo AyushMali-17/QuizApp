@@ -2,16 +2,39 @@
 const questionElement = document.getElementById('question');
 const answerButtonsElement = document.getElementById('answer-buttons');
 const nextButton = document.getElementById('next-button');
+const timerElement = document.getElementById('time');
 
 let currentQuestionIndex = 0;
 let score = 0;
+let timeLeft = 60;
+let timerId;
 
 const questions = [
     {
         question: 'What is 2 + 2?',
         answers: [
             { text: '4', correct: true },
-            { text: '22', correct: false }
+            { text: '22', correct: false },
+            { text: '6', correct: false },
+            { text: '8', correct: false }
+        ]
+    },
+    {
+        question: 'Which planet is known as the Red Planet?',
+        answers: [
+            { text: 'Earth', correct: false },
+            { text: 'Mars', correct: true },
+            { text: 'Jupiter', correct: false },
+            { text: 'Venus', correct: false }
+        ]
+    },
+    {
+        question: 'What is the capital of France?',
+        answers: [
+            { text: 'London', correct: false },
+            { text: 'Berlin', correct: false },
+            { text: 'Madrid', correct: false },
+            { text: 'Paris', correct: true }
         ]
     }
 ];
@@ -20,6 +43,8 @@ function startQuiz() {
     currentQuestionIndex = 0;
     score = 0;
     nextButton.innerHTML = 'Next';
+    timeLeft = 60;
+    startTimer();
     showQuestion();
 }
 
@@ -66,14 +91,31 @@ function selectAnswer(e) {
     nextButton.style.display = 'block';
 }
 
+function startTimer() {
+    timerId = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timerId);
+            endQuiz();
+        }
+    }, 1000);
+}
+
+function endQuiz() {
+    clearInterval(timerId);
+    questionElement.innerHTML = `Time's up! You scored ${score} out of ${questions.length}!`;
+    resetState();
+    nextButton.innerHTML = 'Restart';
+    nextButton.style.display = 'block';
+}
+
 nextButton.addEventListener('click', () => {
     currentQuestionIndex++;
     if(currentQuestionIndex < questions.length) {
         showQuestion();
     } else {
-        questionElement.innerHTML = `You scored ${score} out of ${questions.length}!`;
-        nextButton.innerHTML = 'Restart';
-        nextButton.style.display = 'block';
+        endQuiz();
     }
 });
 

@@ -3,28 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz App</title>
+    <title>Advanced Quiz App</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
+            background-color: #f0f0f0;
         }
         #quiz-container {
             max-width: 600px;
             margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #question-container {
+            margin-bottom: 20px;
+        }
+        #question {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        #next-button {
+            display: none;
+            margin-top: 20px;
+        }
+        .correct {
+            background-color: #4CAF50;
+        }
+        .incorrect {
+            background-color: #f44336;
+        }
+        #timer {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div id="quiz-container">
-        <h1>Quiz App</h1>
+        <h1>Advanced Quiz App</h1>
+        <div id="timer">Time: <span id="time">60</span></div>
         <div id="question-container">
             <p id="question"></p>
         </div>
         <div id="answer-buttons"></div>
-        <button id="next-button" style="display: none;">Next</button>
+        <button id="next-button" class="btn">Next</button>
     </div>
     <script src="script.js"></script>
 </body>
 </html>
+
