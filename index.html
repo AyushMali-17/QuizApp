@@ -5,112 +5,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Quiz App</title>
+    <title>QuizMaster Pro</title>
     <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1E1E1E;
+            --text-color: #E0E0E0;
+            --neon-color: #FF6B00;
+            --button-color: #2C2C2C;
+        }
         body {
             font-family: 'Roboto', Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f0f0f0;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             transition: background-color 0.3s ease;
         }
-        #quiz-container {
-            max-width: 600px;
+        #app-container {
+            max-width: 800px;
             margin: 0 auto;
-            background-color: white;
+        }
+        .card {
+            background-color: var(--card-bg);
             border-radius: 15px;
             padding: 30px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 20px rgba(255, 107, 0, 0.1);
+            margin-bottom: 20px;
             transition: all 0.3s ease;
         }
-        h1 {
+        h1, h2 {
             text-align: center;
-            color: #2c3e50;
+            color: var(--neon-color);
             font-size: 2.5em;
             margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
         }
         #question-container {
             margin-bottom: 30px;
-            background-color: #ecf0f1;
+            background-color: var(--card-bg);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(255, 107, 0, 0.2);
         }
         #question {
             font-size: 1.2em;
             font-weight: bold;
-            color: #34495e;
+            color: var(--text-color);
         }
         .btn {
             display: block;
             width: 100%;
             padding: 15px;
             margin: 10px 0;
-            background-color: #3498db;
-            color: white;
-            border: none;
+            background-color: var(--button-color);
+            color: var(--text-color);
+            border: 2px solid var(--neon-color);
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 1em;
         }
         .btn:hover {
-            background-color: #2980b9;
+            background-color: var(--neon-color);
+            color: var(--bg-color);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(255, 107, 0, 0.3);
         }
         #next-button {
             display: none;
             margin-top: 20px;
-            background-color: #2ecc71;
+            background-color: var(--neon-color);
+            color: var(--bg-color);
         }
         #next-button:hover {
-            background-color: #27ae60;
+            background-color: #FF8C00;
         }
         .correct {
-            background-color: #2ecc71;
+            background-color: #4CAF50;
         }
         .incorrect {
-            background-color: #e74c3c;
+            background-color: #F44336;
         }
         #timer {
             text-align: center;
             font-size: 1.5em;
             margin-bottom: 20px;
-            color: #e74c3c;
+            color: var(--neon-color);
             font-weight: bold;
         }
         #progress-container {
             width: 100%;
             height: 10px;
-            background-color: #ecf0f1;
+            background-color: var(--button-color);
             border-radius: 5px;
             margin-bottom: 30px;
             overflow: hidden;
         }
         #progress-bar {
             height: 100%;
-            background-color: #3498db;
+            background-color: var(--neon-color);
             border-radius: 5px;
             width: 0%;
             transition: width 0.5s ease-in-out;
         }
-        #difficulty-selector {
+        #difficulty-selector, #auth-container, #profile-container, #leaderboard-container, #dashboard-container {
             margin-bottom: 30px;
             text-align: center;
         }
-        #difficulty {
+        select, input {
             padding: 10px;
             font-size: 1em;
             border-radius: 5px;
-            border: 1px solid #bdc3c7;
+            border: 1px solid var(--neon-color);
+            background-color: var(--button-color);
+            color: var(--text-color);
         }
         #score-tracker {
             text-align: center;
             font-size: 1.2em;
             margin-bottom: 20px;
-            color: #2c3e50;
+            color: var(--neon-color);
         }
         .fade-in {
             animation: fadeIn 0.5s;
@@ -129,29 +144,75 @@
             75% { transform: translateX(5px); }
             100% { transform: translateX(0); }
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--neon-color);
+        }
     </style>
 </head>
 <body>
-    <div id="quiz-container" class="fade-in">
+    <div id="app-container">
         <h1>QuizMaster Pro</h1>
-        <div id="difficulty-selector">
-            <label for="difficulty">Choose your challenge:</label>
-            <select id="difficulty">
-                <option value="easy">Beginner</option>
-                <option value="medium">Intermediate</option>
-                <option value="hard">Expert</option>
-            </select>
+        <div id="auth-container" class="card">
+            <h2>Login / Register</h2>
+            <input type="text" id="username" placeholder="Username" class="btn">
+            <input type="password" id="password" placeholder="Password" class="btn">
+            <button id="login-btn" class="btn">Login</button>
+            <button id="register-btn" class="btn">Register</button>
         </div>
-        <div id="score-tracker">Score: <span id="score">0</span></div>
-        <div id="timer">Time: <span id="time">60</span>s</div>
-        <div id="progress-container">
-            <div id="progress-bar"></div>
+        <div id="profile-container" class="card" style="display: none;">
+            <h2>User Profile</h2>
+            <p>Username: <span id="profile-username"></span></p>
+            <p>Total Score: <span id="profile-score"></span></p>
+            <p>Quizzes Completed: <span id="profile-quizzes"></span></p>
+            <button id="logout-btn" class="btn">Logout</button>
         </div>
-        <div id="question-container">
-            <p id="question"></p>
+        <div id="quiz-container" class="card" style="display: none;">
+            <div id="difficulty-selector">
+                <label for="difficulty">Choose your challenge:</label>
+                <select id="difficulty">
+                    <option value="easy">Beginner</option>
+                    <option value="medium">Intermediate</option>
+                    <option value="hard">Expert</option>
+                </select>
+            </div>
+            <div id="score-tracker">Score: <span id="score">0</span></div>
+            <div id="timer">Time: <span id="time">60</span>s</div>
+            <div id="progress-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-container">
+                <p id="question"></p>
+            </div>
+            <div id="answer-buttons"></div>
+            <button id="next-button" class="btn">Next Question</button>
         </div>
-        <div id="answer-buttons"></div>
-        <button id="next-button" class="btn">Next Question</button>
+        <div id="leaderboard-container" class="card">
+            <h2>Leaderboard</h2>
+            <table id="leaderboard">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Username</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Leaderboard data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+        <div id="dashboard-container" class="card" style="display: none;">
+            <h2>Your Dashboard</h2>
+            <div id="user-stats">
+                <!-- User statistics will be inserted here -->
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>

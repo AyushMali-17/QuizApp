@@ -9,12 +9,18 @@ const progressBar = document.getElementById('progress-bar');
 const difficultySelector = document.getElementById('difficulty');
 const scoreElement = document.getElementById('score');
 const quizContainer = document.getElementById('quiz-container');
+const authContainer = document.getElementById('auth-container');
+const profileContainer = document.getElementById('profile-container');
+const leaderboardContainer = document.getElementById('leaderboard-container');
+const dashboardContainer = document.getElementById('dashboard-container');
 
 let currentQuestionIndex = 0;
 let score = 0;
 let timeLeft = 60;
 let timerId;
 let currentQuestions = [];
+let currentUser = null;
+
 
 const easyQuestions = [
     {
@@ -88,6 +94,8 @@ const hardQuestions = [
     }
 ];
 
+
+
 function startQuiz() {
     currentQuestionIndex = 0;
     score = 0;
@@ -112,6 +120,7 @@ function startQuiz() {
     showQuestion();
     updateProgressBar();
 }
+
 
 function showQuestion() {
     resetState();
@@ -207,3 +216,79 @@ nextButton.addEventListener('click', () => {
 difficultySelector.addEventListener('change', startQuiz);
 
 startQuiz();
+
+
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    currentUser = { username, score: 0, quizzesCompleted: 0 };
+    updateUI();
+}
+
+function register() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    currentUser = { username, score: 0, quizzesCompleted: 0 };
+    updateUI();
+}
+
+function logout() {
+    currentUser = null;
+    updateUI();
+}
+
+function updateUI() {
+    if (currentUser) {
+        authContainer.style.display = 'none';
+        profileContainer.style.display = 'block';
+        quizContainer.style.display = 'block';
+        dashboardContainer.style.display = 'block';
+        
+        document.getElementById('profile-username').textContent = currentUser.username;
+        document.getElementById('profile-score').textContent = currentUser.score;
+        document.getElementById('profile-quizzes').textContent = currentUser.quizzesCompleted;
+        
+        updateDashboard();
+    } else {
+        authContainer.style.display = 'block';
+        profileContainer.style.display = 'none';
+        quizContainer.style.display = 'none';
+        dashboardContainer.style.display = 'none';
+    }
+}
+
+function updateLeaderboard() {
+    const leaderboardData = [
+        { rank: 1, username: 'user1', score: 1000 },
+        { rank: 2, username: 'user2', score: 900 },
+        { rank: 3, username: 'user3', score: 800 },
+    ];
+    
+    const leaderboardBody = document.querySelector('#leaderboard tbody');
+    leaderboardBody.innerHTML = '';
+    leaderboardData.forEach(entry => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${entry.rank}</td>
+            <td>${entry.username}</td>
+            <td>${entry.score}</td>
+        `;
+        leaderboardBody.appendChild(row);
+    });
+}
+
+function updateDashboard() {
+    const userStats = document.getElementById('user-stats');
+    userStats.innerHTML = `
+        <p>Total Score: ${currentUser.score}</p>
+        <p>Quizzes Completed: ${currentUser.quizzesCompleted}</p>
+        <p>Average Score: ${currentUser.quizzesCompleted > 0 ? (currentUser.score / currentUser.quizzesCompleted).toFixed(2) : 0}</p>
+    `;
+}
+
+document.getElementById('login-btn').addEventListener('click', login);
+document.getElementById('register-btn').addEventListener('click', register);
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+updateLeaderboard();
+updateUI();
