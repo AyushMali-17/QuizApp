@@ -1,6 +1,7 @@
 // script.js
 //taking help from ClaudeAI while coding and understanding concepts through YT 
 
+// Elements
 const questionElement = document.getElementById('question');
 const answerButtonsElement = document.getElementById('answer-buttons');
 const nextButton = document.getElementById('next-button');
@@ -19,6 +20,9 @@ const searchBtn = document.getElementById('search-btn');
 const searchResults = document.getElementById('search-results');
 const categoryList = document.getElementById('category-list');
 const quizList = document.getElementById('quiz-list');
+const authMessage = document.getElementById('auth-message');
+const quizSelect = document.getElementById('quiz-select');
+const startSelectedQuizBtn = document.getElementById('start-selected-quiz-btn');
 
 let currentQuestionIndex = 0;
 let score = 0;
@@ -74,20 +78,25 @@ function startQuiz() {
     nextButton.innerHTML = 'Next Question';
     timeLeft = 60;
     scoreElement.textContent = score;
-    
-    const difficulty = difficultySelector.value;
-    switch(difficulty) {
-        case 'easy':
-            currentQuestions = easyQuestions;
-            break;
-        case 'medium':
-            currentQuestions = mediumQuestions;
-            break;
-        case 'hard':
-            currentQuestions = hardQuestions;
-            break;
+
+    const selectedQuiz = quizSelect.value;
+    if (selectedQuiz) {
+        currentQuestions = quizzes.find(quiz => quiz.title === selectedQuiz).questions;
+    } else {
+        const difficulty = difficultySelector.value;
+        switch (difficulty) {
+            case 'easy':
+                currentQuestions = easyQuestions;
+                break;
+            case 'medium':
+                currentQuestions = mediumQuestions;
+                break;
+            case 'hard':
+                currentQuestions = hardQuestions;
+                break;
+        }
     }
-    
+
     startTimer();
     showQuestion();
     updateProgressBar();
@@ -105,7 +114,7 @@ function showQuestion() {
         button.innerHTML = answer.text;
         button.classList.add('btn', 'fade-in');
         answerButtonsElement.appendChild(button);
-        if(answer.correct) {
+        if (answer.correct) {
             button.dataset.correct = answer.correct;
         }
         button.addEventListener('click', selectAnswer);
@@ -114,7 +123,7 @@ function showQuestion() {
 
 function resetState() {
     nextButton.style.display = 'none';
-    while(answerButtonsElement.firstChild) {
+    while (answerButtonsElement.firstChild) {
         answerButtonsElement.removeChild(answerButtonsElement.firstChild);
     }
     questionElement.classList.remove('fade-in');
@@ -123,7 +132,7 @@ function resetState() {
 function selectAnswer(e) {
     const selectedBtn = e.target;
     const isCorrect = selectedBtn.dataset.correct === 'true';
-    if(isCorrect) {
+    if (isCorrect) {
         selectedBtn.classList.add('correct');
         score++;
         scoreElement.textContent = score;
@@ -132,7 +141,7 @@ function selectAnswer(e) {
         selectedBtn.classList.add('incorrect');
     }
     Array.from(answerButtonsElement.children).forEach(button => {
-        if(button.dataset.correct === 'true') {
+        if (button.dataset.correct === 'true') {
             button.classList.add('correct');
         }
         button.disabled = true;
@@ -182,14 +191,28 @@ function updateProgressBar() {
 function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    currentUser = { username, score: 0, quizzesCompleted: 0, quizzes: [] };
+    if (username && password) {
+        currentUser = { username, score: 0, quizzesCompleted: 0, quizzes: [] };
+        authMessage.textContent = 'Login successful!';
+        authMessage.style.color = 'green';
+    } else {
+        authMessage.textContent = 'Login failed. Please enter a valid username and password.';
+        authMessage.style.color = 'red';
+    }
     updateUI();
 }
 
 function register() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    currentUser = { username, score: 0, quizzesCompleted: 0, quizzes: [] };
+    if (username && password) {
+        currentUser = { username, score: 0, quizzesCompleted: 0, quizzes: [] };
+        authMessage.textContent = 'Registration successful!';
+        authMessage.style.color = 'green';
+    } else {
+        authMessage.textContent = 'Registration failed. Please enter a valid username and password.';
+        authMessage.style.color = 'red';
+    }
     updateUI();
 }
 
@@ -205,11 +228,11 @@ function updateUI() {
         quizContainer.style.display = 'block';
         dashboardContainer.style.display = 'block';
         createQuizContainer.style.display = 'block';
-        
+
         document.getElementById('profile-username').textContent = currentUser.username;
         document.getElementById('profile-score').textContent = currentUser.score;
         document.getElementById('profile-quizzes').textContent = currentUser.quizzesCompleted;
-        
+
         updateDashboard();
         updateQuizList();
     } else {
@@ -227,7 +250,7 @@ function updateLeaderboard() {
         { rank: 2, username: 'user2', score: 900 },
         { rank: 3, username: 'user3', score: 800 },
     ];
-    
+
     const leaderboardBody = document.querySelector('#leaderboard tbody');
     leaderboardBody.innerHTML = '';
     leaderboardData.forEach(entry => {
@@ -242,145 +265,64 @@ function updateLeaderboard() {
 }
 
 function updateDashboard() {
-    const userStats = document.getElementById('user-stats');
-    userStats.innerHTML = `
-        <p>Total Score: ${currentUser.score}</p>
+    document.getElementById('user-info').innerHTML = `
+        <h3>User Information</h3>
+        <p>Username: ${currentUser.username}</p>
+        <p>Score: ${currentUser.score}</p>
         <p>Quizzes Completed: ${currentUser.quizzesCompleted}</p>
-        <p>Average Score: ${currentUser.quizzesCompleted > 0 ? (currentUser.score / currentUser.quizzesCompleted).toFixed(2) : 0}</p>
     `;
+}
+
+function updateQuizList() {
+    quizList.innerHTML = '';
+    quizSelect.innerHTML = '<option value="">Select a quiz</option>';
+    quizzes.forEach(quiz => {
+        const quizItem = document.createElement('li');
+        quizItem.textContent = `${quiz.title} - ${quiz.category} - ${quiz.difficulty}`;
+        quizList.appendChild(quizItem);
+
+        const quizOption = document.createElement('option');
+        quizOption.value = quiz.title;
+        quizOption.textContent = `${quiz.title} - ${quiz.category} - ${quiz.difficulty}`;
+        quizSelect.appendChild(quizOption);
+    });
 }
 
 function createQuiz() {
     const title = document.getElementById('quiz-title').value;
     const category = document.getElementById('quiz-category').value;
-    const questions = [];
-    
-    const questionInputs = document.querySelectorAll('.question-input');
-    questionInputs.forEach(qi => {
-        const question = qi.querySelector('.question-text').value;
-        const answers = [];
-        const answerInputs = qi.querySelectorAll('.answer-input');
-        answerInputs.forEach(ai => {
-            answers.push({
-                text: ai.querySelector('.answer-text').value,
-                correct: ai.querySelector('.answer-correct').checked
-            });
-        });
-        questions.push({ question, answers });
+    const difficulty = document.getElementById('quiz-difficulty').value;
+    const questions = document.getElementById('quiz-questions').value.split('\n').map(question => {
+        const [q, ...a] = question.split(';');
+        return {
+            question: q,
+            answers: a.map(ans => {
+                const [text, correct] = ans.split(':');
+                return { text, correct: correct === 'true' };
+            })
+        };
     });
-    
-    const newQuiz = { title, category, questions };
-    quizzes.push(newQuiz);
-    if (currentUser) {
-        currentUser.quizzes.push(newQuiz);
-    }
+    quizzes.push({ title, category, difficulty, questions });
     updateQuizList();
 }
 
-function updateQuizList() {
-    quizList.innerHTML = '';
-    if (currentUser) {
-        currentUser.quizzes.forEach(quiz => {
-            const quizItem = document.createElement('div');
-            quizItem.classList.add('quiz-item');
-            quizItem.textContent = quiz.title;
-            quizItem.addEventListener('click', () => startCustomQuiz(quiz));
-            quizList.appendChild(quizItem);
-        });
-    }
-}
-
-function startCustomQuiz(quiz) {
-    currentQuestions = quiz.questions;
-    startQuiz();
-}
-
-function searchQuizzes() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const results = quizzes.filter(quiz => 
-        quiz.title.toLowerCase().includes(searchTerm) || 
-        quiz.category.toLowerCase().includes(searchTerm)
-    );
-    displaySearchResults(results);
-}
-
-function displaySearchResults(results) {
-    searchResults.innerHTML = '';
-    results.forEach(quiz => {
-        const quizItem = document.createElement('div');
-        quizItem.classList.add('quiz-item');
-        quizItem.textContent = `${quiz.title} (${quiz.category})`;
-        quizItem.addEventListener('click', () => startCustomQuiz(quiz));
-        searchResults.appendChild(quizItem);
-    });
-}
-
-function updateCategories() {
-    categoryList.innerHTML = '';
-    categories.forEach(category => {
-        const categoryItem = document.createElement('div');
-        categoryItem.classList.add('category-item');
-        categoryItem.textContent = category;
-        categoryItem.addEventListener('click', () => filterQuizzesByCategory(category));
-        categoryList.appendChild(categoryItem);
-    });
-}
-
-function filterQuizzesByCategory(category) {
-    const filteredQuizzes = quizzes.filter(quiz => quiz.category === category);
-    displaySearchResults(filteredQuizzes);
-}
-
-function addQuestion() {
-    const questionsContainer = document.getElementById('questions-container');
-    const questionDiv = document.createElement('div');
-    questionDiv.classList.add('question-input');
-    questionDiv.innerHTML = `
-        <input type="text" class="question-text" placeholder="Enter question">
-        <div class="answers-container">
-            <div class="answer-input">
-                <input type="text" class="answer-text" placeholder="Answer">
-                <input type="checkbox" class="answer-correct"> Correct
-            </div>
-        </div>
-        <button class="btn add-answer-btn">Add Answer</button>
-    `;
-    questionsContainer.appendChild(questionDiv);
-    
-    const addAnswerBtn = questionDiv.querySelector('.add-answer-btn');
-    addAnswerBtn.addEventListener('click', () => addAnswer(questionDiv));
-}
-
-function addAnswer(questionDiv) {
-    const answersContainer = questionDiv.querySelector('.answers-container');
-    const answerDiv = document.createElement('div');
-    answerDiv.classList.add('answer-input');
-    answerDiv.innerHTML = `
-        <input type="text" class="answer-text" placeholder="Answer">
-        <input type="checkbox" class="answer-correct"> Correct
-    `;
-    answersContainer.appendChild(answerDiv);
-}
-
-// Event Listeners
 document.getElementById('login-btn').addEventListener('click', login);
 document.getElementById('register-btn').addEventListener('click', register);
 document.getElementById('logout-btn').addEventListener('click', logout);
 nextButton.addEventListener('click', () => {
     currentQuestionIndex++;
-    if(currentQuestionIndex < currentQuestions.length) {
+    if (currentQuestionIndex < currentQuestions.length) {
         showQuestion();
         updateProgressBar();
     } else {
         endQuiz();
     }
 });
-difficultySelector.addEventListener('change', startQuiz);
-document.getElementById('add-question-btn').addEventListener('click', addQuestion);
-document.getElementById('save-quiz-btn').addEventListener('click', createQuiz);
-searchBtn.addEventListener('click', searchQuizzes);
 
-// Initialize the app
-updateLeaderboard();
-updateCategories();
-updateUI();
+document.getElementById('create-quiz-btn').addEventListener('click', createQuiz);
+startSelectedQuizBtn.addEventListener('click', startQuiz);
+
+categoryList.innerHTML = categories.map(category => `<option value="${category}">${category}</option>`).join('');
+
+
+
