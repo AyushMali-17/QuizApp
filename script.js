@@ -1,5 +1,6 @@
 // script.js
 //taking help from ClaudeAI while coding and understanding concepts through YT 
+
 const questionElement = document.getElementById('question');
 const answerButtonsElement = document.getElementById('answer-buttons');
 const nextButton = document.getElementById('next-button');
@@ -7,6 +8,7 @@ const timerElement = document.getElementById('time');
 const progressBar = document.getElementById('progress-bar');
 const difficultySelector = document.getElementById('difficulty');
 const scoreElement = document.getElementById('score');
+const quizContainer = document.getElementById('quiz-container');
 
 let currentQuestionIndex = 0;
 let score = 0;
@@ -89,7 +91,7 @@ const hardQuestions = [
 function startQuiz() {
     currentQuestionIndex = 0;
     score = 0;
-    nextButton.innerHTML = 'Next';
+    nextButton.innerHTML = 'Next Question';
     timeLeft = 60;
     scoreElement.textContent = score;
     
@@ -115,12 +117,13 @@ function showQuestion() {
     resetState();
     let currentQuestion = currentQuestions[currentQuestionIndex];
     let questionNo = currentQuestionIndex + 1;
-    questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
+    questionElement.innerHTML = `Question ${questionNo}: ${currentQuestion.question}`;
+    questionElement.classList.add('fade-in');
 
     currentQuestion.answers.forEach(answer => {
         const button = document.createElement('button');
         button.innerHTML = answer.text;
-        button.classList.add('btn');
+        button.classList.add('btn', 'fade-in');
         answerButtonsElement.appendChild(button);
         if(answer.correct) {
             button.dataset.correct = answer.correct;
@@ -134,6 +137,7 @@ function resetState() {
     while(answerButtonsElement.firstChild) {
         answerButtonsElement.removeChild(answerButtonsElement.firstChild);
     }
+    questionElement.classList.remove('fade-in');
 }
 
 function selectAnswer(e) {
@@ -143,6 +147,7 @@ function selectAnswer(e) {
         selectedBtn.classList.add('correct');
         score++;
         scoreElement.textContent = score;
+        quizContainer.classList.add('shake');
     } else {
         selectedBtn.classList.add('incorrect');
     }
@@ -153,12 +158,18 @@ function selectAnswer(e) {
         button.disabled = true;
     });
     nextButton.style.display = 'block';
+    setTimeout(() => {
+        quizContainer.classList.remove('shake');
+    }, 500);
 }
 
 function startTimer() {
     timerId = setInterval(() => {
         timeLeft--;
         timerElement.textContent = timeLeft;
+        if (timeLeft <= 10) {
+            timerElement.style.color = '#e74c3c';
+        }
         if (timeLeft <= 0) {
             clearInterval(timerId);
             endQuiz();
@@ -168,14 +179,18 @@ function startTimer() {
 
 function endQuiz() {
     clearInterval(timerId);
-    questionElement.innerHTML = `Time's up! You scored ${score} out of ${currentQuestions.length}!`;
+    questionElement.innerHTML = `
+        <h2>Quiz Completed!</h2>
+        <p>Your final score: ${score} out of ${currentQuestions.length}</p>
+    `;
     resetState();
-    nextButton.innerHTML = 'Restart';
+    nextButton.innerHTML = 'Restart Quiz';
     nextButton.style.display = 'block';
+    progressBar.style.width = '100%';
 }
 
 function updateProgressBar() {
-    const progress = (currentQuestionIndex / currentQuestions.length) * 100;
+    const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
     progressBar.style.width = progress + '%';
 }
 

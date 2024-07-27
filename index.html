@@ -8,98 +8,142 @@
     <title>Advanced Quiz App</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f0f0f0;
+            color: #333;
+            transition: background-color 0.3s ease;
         }
         #quiz-container {
             max-width: 600px;
             margin: 0 auto;
             background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
         h1 {
             text-align: center;
-            color: #333;
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 30px;
         }
         #question-container {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         #question {
-            font-size: 18px;
+            font-size: 1.2em;
             font-weight: bold;
+            color: #34495e;
         }
         .btn {
             display: block;
             width: 100%;
-            padding: 10px;
+            padding: 15px;
             margin: 10px 0;
-            background-color: #4CAF50;
+            background-color: #3498db;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            font-size: 1em;
         }
         .btn:hover {
-            background-color: #45a049;
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         #next-button {
             display: none;
             margin-top: 20px;
+            background-color: #2ecc71;
+        }
+        #next-button:hover {
+            background-color: #27ae60;
         }
         .correct {
-            background-color: #4CAF50;
+            background-color: #2ecc71;
         }
         .incorrect {
-            background-color: #f44336;
+            background-color: #e74c3c;
         }
         #timer {
             text-align: center;
-            font-size: 18px;
+            font-size: 1.5em;
             margin-bottom: 20px;
+            color: #e74c3c;
+            font-weight: bold;
         }
         #progress-container {
             width: 100%;
             height: 10px;
-            background-color: #ddd;
+            background-color: #ecf0f1;
             border-radius: 5px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            overflow: hidden;
         }
         #progress-bar {
             height: 100%;
-            background-color: #4CAF50;
+            background-color: #3498db;
             border-radius: 5px;
             width: 0%;
-            transition: width 0.3s ease-in-out;
+            transition: width 0.5s ease-in-out;
         }
         #difficulty-selector {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             text-align: center;
+        }
+        #difficulty {
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #bdc3c7;
         }
         #score-tracker {
             text-align: center;
-            font-size: 18px;
+            font-size: 1.2em;
             margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .shake {
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(5px); }
+            50% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
         }
     </style>
 </head>
 <body>
-    <div id="quiz-container">
-        <h1>Advanced Quiz App</h1>
+    <div id="quiz-container" class="fade-in">
+        <h1>QuizMaster Pro</h1>
         <div id="difficulty-selector">
-            <label for="difficulty">Select Difficulty:</label>
+            <label for="difficulty">Choose your challenge:</label>
             <select id="difficulty">
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
+                <option value="easy">Beginner</option>
+                <option value="medium">Intermediate</option>
+                <option value="hard">Expert</option>
             </select>
         </div>
         <div id="score-tracker">Score: <span id="score">0</span></div>
-        <div id="timer">Time: <span id="time">60</span></div>
+        <div id="timer">Time: <span id="time">60</span>s</div>
         <div id="progress-container">
             <div id="progress-bar"></div>
         </div>
@@ -107,7 +151,7 @@
             <p id="question"></p>
         </div>
         <div id="answer-buttons"></div>
-        <button id="next-button" class="btn">Next</button>
+        <button id="next-button" class="btn">Next Question</button>
     </div>
     <script src="script.js"></script>
 </body>
