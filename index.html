@@ -1,5 +1,3 @@
-<!-- taking help from ClaudeAI while coding and understanding concepts through YT  -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -109,17 +107,19 @@
             width: 0%;
             transition: width 0.5s ease-in-out;
         }
-        #difficulty-selector, #auth-container, #profile-container, #leaderboard-container, #dashboard-container {
+        #difficulty-selector, #auth-container, #profile-container, #leaderboard-container, #dashboard-container, #create-quiz-container, #search-container {
             margin-bottom: 30px;
             text-align: center;
         }
-        select, input {
+        select, input, textarea {
             padding: 10px;
             font-size: 1em;
             border-radius: 5px;
             border: 1px solid var(--neon-color);
             background-color: var(--button-color);
             color: var(--text-color);
+            width: calc(100% - 22px);
+            margin-bottom: 10px;
         }
         #score-tracker {
             text-align: center;
@@ -153,6 +153,24 @@
             text-align: left;
             border-bottom: 1px solid var(--neon-color);
         }
+        #category-list, #quiz-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .category-item, .quiz-item {
+            background-color: var(--button-color);
+            border: 1px solid var(--neon-color);
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .category-item:hover, .quiz-item:hover {
+            background-color: var(--neon-color);
+            color: var(--bg-color);
+        }
     </style>
 </head>
 <body>
@@ -171,6 +189,16 @@
             <p>Total Score: <span id="profile-score"></span></p>
             <p>Quizzes Completed: <span id="profile-quizzes"></span></p>
             <button id="logout-btn" class="btn">Logout</button>
+        </div>
+        <div id="search-container" class="card">
+            <h2>Search Quizzes</h2>
+            <input type="text" id="search-input" placeholder="Search for quizzes...">
+            <button id="search-btn" class="btn">Search</button>
+            <div id="search-results"></div>
+        </div>
+        <div id="category-container" class="card">
+            <h2>Quiz Categories</h2>
+            <div id="category-list"></div>
         </div>
         <div id="quiz-container" class="card" style="display: none;">
             <div id="difficulty-selector">
@@ -192,6 +220,17 @@
             <div id="answer-buttons"></div>
             <button id="next-button" class="btn">Next Question</button>
         </div>
+        <div id="create-quiz-container" class="card" style="display: none;">
+            <h2>Create Your Own Quiz</h2>
+            <input type="text" id="quiz-title" placeholder="Quiz Title">
+            <select id="quiz-category">
+                <option value="">Select Category</option>
+                <!-- Categories will be dynamically added here -->
+            </select>
+            <div id="questions-container"></div>
+            <button id="add-question-btn" class="btn">Add Question</button>
+            <button id="save-quiz-btn" class="btn">Save Quiz</button>
+        </div>
         <div id="leaderboard-container" class="card">
             <h2>Leaderboard</h2>
             <table id="leaderboard">
@@ -212,6 +251,8 @@
             <div id="user-stats">
                 <!-- User statistics will be inserted here -->
             </div>
+            <h3>Your Quizzes</h3>
+            <div id="quiz-list"></div>
         </div>
     </div>
     <script src="script.js"></script>
