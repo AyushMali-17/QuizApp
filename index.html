@@ -1,3 +1,5 @@
+<!-- taking help from ClaudeAI while coding and understanding concepts through YT  -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,12 +62,47 @@
             font-size: 18px;
             margin-bottom: 20px;
         }
+        #progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        #progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s ease-in-out;
+        }
+        #difficulty-selector {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #score-tracker {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div id="quiz-container">
         <h1>Advanced Quiz App</h1>
+        <div id="difficulty-selector">
+            <label for="difficulty">Select Difficulty:</label>
+            <select id="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <div id="score-tracker">Score: <span id="score">0</span></div>
         <div id="timer">Time: <span id="time">60</span></div>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
         <div id="question-container">
             <p id="question"></p>
         </div>
@@ -75,4 +112,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-

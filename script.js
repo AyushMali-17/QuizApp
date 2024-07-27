@@ -1,15 +1,20 @@
 // script.js
+//taking help from ClaudeAI while coding and understanding concepts through YT 
 const questionElement = document.getElementById('question');
 const answerButtonsElement = document.getElementById('answer-buttons');
 const nextButton = document.getElementById('next-button');
 const timerElement = document.getElementById('time');
+const progressBar = document.getElementById('progress-bar');
+const difficultySelector = document.getElementById('difficulty');
+const scoreElement = document.getElementById('score');
 
 let currentQuestionIndex = 0;
 let score = 0;
 let timeLeft = 60;
 let timerId;
+let currentQuestions = [];
 
-const questions = [
+const easyQuestions = [
     {
         question: 'What is 2 + 2?',
         answers: [
@@ -39,18 +44,76 @@ const questions = [
     }
 ];
 
+const mediumQuestions = [
+    {
+        question: 'What is the chemical symbol for gold?',
+        answers: [
+            { text: 'Au', correct: true },
+            { text: 'Ag', correct: false },
+            { text: 'Fe', correct: false },
+            { text: 'Cu', correct: false }
+        ]
+    },
+    {
+        question: 'In which year did World War II end?',
+        answers: [
+            { text: '1943', correct: false },
+            { text: '1945', correct: true },
+            { text: '1947', correct: false },
+            { text: '1950', correct: false }
+        ]
+    }
+];
+
+const hardQuestions = [
+    {
+        question: 'What is the largest known prime number (as of 2021)?',
+        answers: [
+            { text: '2^82,589,933 - 1', correct: true },
+            { text: '2^77,232,917 - 1', correct: false },
+            { text: '2^43,112,609 - 1', correct: false },
+            { text: '2^57,885,161 - 1', correct: false }
+        ]
+    },
+    {
+        question: 'Which particle in an atom has no electric charge?',
+        answers: [
+            { text: 'Proton', correct: false },
+            { text: 'Electron', correct: false },
+            { text: 'Neutron', correct: true },
+            { text: 'Positron', correct: false }
+        ]
+    }
+];
+
 function startQuiz() {
     currentQuestionIndex = 0;
     score = 0;
     nextButton.innerHTML = 'Next';
     timeLeft = 60;
+    scoreElement.textContent = score;
+    
+    const difficulty = difficultySelector.value;
+    switch(difficulty) {
+        case 'easy':
+            currentQuestions = easyQuestions;
+            break;
+        case 'medium':
+            currentQuestions = mediumQuestions;
+            break;
+        case 'hard':
+            currentQuestions = hardQuestions;
+            break;
+    }
+    
     startTimer();
     showQuestion();
+    updateProgressBar();
 }
 
 function showQuestion() {
     resetState();
-    let currentQuestion = questions[currentQuestionIndex];
+    let currentQuestion = currentQuestions[currentQuestionIndex];
     let questionNo = currentQuestionIndex + 1;
     questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
 
@@ -79,6 +142,7 @@ function selectAnswer(e) {
     if(isCorrect) {
         selectedBtn.classList.add('correct');
         score++;
+        scoreElement.textContent = score;
     } else {
         selectedBtn.classList.add('incorrect');
     }
@@ -104,19 +168,27 @@ function startTimer() {
 
 function endQuiz() {
     clearInterval(timerId);
-    questionElement.innerHTML = `Time's up! You scored ${score} out of ${questions.length}!`;
+    questionElement.innerHTML = `Time's up! You scored ${score} out of ${currentQuestions.length}!`;
     resetState();
     nextButton.innerHTML = 'Restart';
     nextButton.style.display = 'block';
 }
 
+function updateProgressBar() {
+    const progress = (currentQuestionIndex / currentQuestions.length) * 100;
+    progressBar.style.width = progress + '%';
+}
+
 nextButton.addEventListener('click', () => {
     currentQuestionIndex++;
-    if(currentQuestionIndex < questions.length) {
+    if(currentQuestionIndex < currentQuestions.length) {
         showQuestion();
+        updateProgressBar();
     } else {
         endQuiz();
     }
 });
+
+difficultySelector.addEventListener('change', startQuiz);
 
 startQuiz();
